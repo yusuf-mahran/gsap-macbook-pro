@@ -4,7 +4,15 @@ import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
 
 export default function Showcase() {
-  const isTablet = useMediaQuery({ query: '(max-width: 100px)' });
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import Image from 'next/image';
+import { useMediaQuery } from 'react-responsive';
+
+export default function Showcase() {
+  const container = useRef<HTMLElement | null>(null);
+  const isTablet = useMediaQuery({ query: '(max-width: 1024px)' });
 
   useGSAP(() => {
     const timeline = gsap.timeline({
@@ -26,7 +34,10 @@ export default function Showcase() {
         y: 0,
         ease: 'power4.inOut',
       });
-  }, [isTablet]);
+  }, { dependencies: [isTablet], revertOnUpdate: true, scope: container });
+
+  return (
+    <section id="showcase" ref={container}>
 
   return (
     <section id="showcase">
