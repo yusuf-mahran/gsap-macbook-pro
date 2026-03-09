@@ -3,8 +3,11 @@
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import { useMediaQuery } from 'react-responsive';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Showcase() {
   const container = useRef<HTMLElement | null>(null);
@@ -12,27 +15,34 @@ export default function Showcase() {
 
   useGSAP(
     () => {
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#showcase',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-          pin: true,
-        },
-      });
-
-      timeline
-        .to('.mask img', {
-          transform: 'scale(1.1)',
-        })
-        .to('.content', {
-          opacity: 1,
-          y: 0,
-          ease: 'power4.inOut',
+      if (!isTablet) {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: '#showcase',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+            pin: true,
+            invalidateOnRefresh: true,
+          },
         });
+
+        timeline
+          .to('.mask img', {
+            transform: 'scale(1.1)',
+          })
+          .to('.content', { opacity: 1, y: 0, ease: 'power1.in' });
+
+        ScrollTrigger.refresh();
+      }
+      // Revert the animation when the screen size changes to ensure it works correctly on different devices
+      if (isTablet) {
+        gsap.set('.mask img', { transform: 'scale(1.2)' });
+        gsap.set('.content', { opacity: 1, y: 0 });
+      }
     },
-    { dependencies: [isTablet], revertOnUpdate: true, scope: container },
+
+    { dependencies: [isTablet], revertOnUpdate: true },
   );
 
   return (
@@ -47,7 +57,6 @@ export default function Showcase() {
             alt="MacBook Pro Showcase"
             width={500}
             height={500}
-            className="w-full h-full"
           />
         </div>
       </div>
