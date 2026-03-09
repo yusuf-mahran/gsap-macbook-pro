@@ -1,9 +1,5 @@
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import Image from 'next/image';
-import { useMediaQuery } from 'react-responsive';
+'use client';
 
-export default function Showcase() {
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -14,33 +10,33 @@ export default function Showcase() {
   const container = useRef<HTMLElement | null>(null);
   const isTablet = useMediaQuery({ query: '(max-width: 1024px)' });
 
-  useGSAP(() => {
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: '#showcase',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-        pin: true,
-      },
-    });
-
-    timeline
-      .to('.mask img', {
-        transform: 'scale(1.1)',
-      })
-      .to('.content', {
-        opacity: 1,
-        y: 0,
-        ease: 'power4.inOut',
+  useGSAP(
+    () => {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#showcase',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          pin: true,
+        },
       });
-  }, { dependencies: [isTablet], revertOnUpdate: true, scope: container });
+
+      timeline
+        .to('.mask img', {
+          transform: 'scale(1.1)',
+        })
+        .to('.content', {
+          opacity: 1,
+          y: 0,
+          ease: 'power4.inOut',
+        });
+    },
+    { dependencies: [isTablet], revertOnUpdate: true, scope: container },
+  );
 
   return (
     <section id="showcase" ref={container}>
-
-  return (
-    <section id="showcase">
       <div className="media">
         <video autoPlay loop muted playsInline>
           <source src="/videos/game.mp4" type="video/mp4" />
