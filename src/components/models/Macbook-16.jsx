@@ -26,13 +26,9 @@ export default function MacbookModel16(props) {
       if (
         child.isMesh &&
         child.material &&
+        !Array.isArray(child.material) &&
         !noChangeParts.includes(child.material.name)
       ) {
-        // Clone material to avoid mutating shared instances
-        if (!child.userData.materialCloned) {
-          child.material = child.material.clone();
-          child.userData.materialCloned = true;
-        }
         child.material.color.set(color);
       }
     });
