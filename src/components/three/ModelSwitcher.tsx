@@ -1,0 +1,85 @@
+import { useRef } from 'react';
+import { PresentationControls } from '@react-three/drei';
+import { Mesh, Group } from 'three';
+import MacbookModel14 from '@/components/models/Macbook-14';
+import MacbookModel16 from '@/components/models/Macbook-16';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+const ANIMATION_DURATION = 1;
+const OFFSET_DISTANCE = 5;
+
+const fadeMeshes = (group: Group | null, opacity: number) => {
+  if (!group) return;
+
+  group.traverse((child) => {
+    if (child instanceof Mesh) {
+      child.material.transparent = true;
+      gsap.to(child.material, {
+        opacity,
+        duration: ANIMATION_DURATION,
+      });
+    }
+  });
+};
+
+const moveGroup = (group: Group | null, x: number) => {
+  if (!group) return;
+
+  gsap.to(group.position, { x, duration: ANIMATION_DURATION });
+};
+
+export default function ModelSwitcher({
+  scale,
+  isMobile,
+}: {
+  scale: number;
+  isMobile: boolean;
+}) {
+  const SCALE_LARGE_DESKTOP = 0.08;
+  const SCALE_SMALL_DESKTOP = 0.05;
+  const smallMacbookRef = useRef<Group | null>(null);
+  const largeMacbookRef = useRef<Group | null>(null);
+
+  const showLargeMacbook =
+    scale === SCALE_LARGE_DESKTOP ||
+    (scale === SCALE_SMALL_DESKTOP && isMobile);
+
+  useGSAP(() => {
+    if (showLargeMacbook) {
+      moveGroup(smallMacbookRef.current, -OFFSET_DISTANCE);
+      moveGroup(largeMacbookRef.current, 0);
+
+      fadeMeshes(smallMacbookRef.current, 0);
+      fadeMeshes(largeMacbookRef.current, 1);
+    } else {
+      moveGroup(smallMacbookRef.current, 0);
+      moveGroup(largeMacbookRef.current, OFFSET_DISTANCE);
+
+      fadeMeshes(smallMacbookRef.current, 1);
+      fadeMeshes(largeMacbookRef.current, 0);
+    }
+  }, [scale, isMobile]);
+
+  const controlsConfig: Parameters<typeof PresentationControls>[0] = {
+    snap: true,
+    speed: 1,
+    zoom: 1,
+    azimuth: [-Infinity, Infinity],
+  };
+
+  return (
+    <>
+      <PresentationControls {...controlsConfig}>
+        <group ref={largeMacbookRef}>
+          <MacbookModel16 scale={isMobile ? 0.05 : 0.08} position={[0, 0, 0]} />
+        </group>
+      </PresentationControls>
+      <PresentationControls {...controlsConfig}>
+        <group ref={smallMacbookRef}>
+          <MacbookModel14 scale={isMobile ? 0.03 : 0.06} position={[0, 0, 0]} />
+        </group>
+      </PresentationControls>
+    </>
+  );
+}
