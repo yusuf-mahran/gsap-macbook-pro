@@ -236,10 +236,10 @@ body {
     }
 
     .wrapper {
-      @apply w-7xl 2xl:w-400 h-[50vh] lg:h-screen relative;
+      @apply w-full 2xl:w-400 h-[50vh] sm:h-auto sm:aspect-video lg:h-screen relative;
 
       img {
-        @apply max-w-40 lg:max-w-108 2xl:max-w-140 object-cover object-center;
+        @apply max-w-40 sm:max-w-1/4 lg:max-w-108 2xl:max-w-140 object-cover object-center;
       }
 
       .p1 {
