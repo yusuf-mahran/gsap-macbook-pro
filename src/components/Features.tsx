@@ -12,6 +12,7 @@ import { Html } from '@react-three/drei';
 import useMacbookStore from '@/store';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import Image from 'next/image';
 
 const ModelScroll = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -115,7 +116,12 @@ export default function Features() {
             key={feature.id}
             className={clsx('box', `box${index + 1}`, feature.styles)}
           >
-            <img src={feature.icon} alt={feature.highlight} />
+            <Image
+              src={feature.icon}
+              alt={feature.highlight}
+              width={50}
+              height={50}
+            />
             <p>
               <span className="text-white">{feature.highlight}</span>
               {feature.text}
