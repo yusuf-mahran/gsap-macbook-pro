@@ -236,10 +236,10 @@ body {
     }
 
     .wrapper {
-      @apply w-7xl 2xl:w-400 h-[50vh] lg:h-screen relative;
+      @apply w-full 2xl:w-400 h-[50vh] sm:h-auto sm:aspect-video lg:h-screen relative;
 
       img {
-        @apply max-w-40 lg:max-w-108 2xl:max-w-140 object-cover object-center;
+        @apply max-w-40 sm:max-w-1/4 lg:max-w-108 2xl:max-w-140 object-cover object-center;
       }
 
       .p1 {
@@ -334,6 +334,10 @@ body {
         div:last-of-type {
           @apply bg-[#1D1D1F] p-10 rounded-3xl flex items-center gap-7;
 
+          @media (max-width: 420px) {
+            @apply flex-col items-start;
+          }
+
           p {
             @apply font-semibold lg:text-2xl 2xl:text-3xl;
           }
@@ -348,6 +352,10 @@ body {
         }
         .apple-gradient {
           @apply p-10 rounded-3xl flex items-center gap-7 relative;
+
+          @media (max-width: 420px) {
+            @apply flex-col items-start;
+          }
 
           background: #1d1d1f;
           background-clip: padding-box; /* !important */
