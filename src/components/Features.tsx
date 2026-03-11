@@ -6,13 +6,16 @@ import { features, featureSequence } from '@/constants';
 import { clsx } from 'clsx';
 import { Suspense, useEffect, useRef } from 'react';
 import MacbookModel from './models/Macbook';
-import useMediaQuery from 'react-responsive';
+import { useMediaQuery } from 'react-responsive';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import useMacbookStore from '@/store';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ModelScroll = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -21,6 +24,8 @@ const ModelScroll = () => {
 
   // Pre-load all feature videos during component mount
   useEffect(() => {
+    const videos: HTMLVideoElement[] = [];
+
     featureSequence.forEach((feature) => {
       const v = document.createElement('video');
 
@@ -32,8 +37,17 @@ const ModelScroll = () => {
         crossOrigin: 'anonymous',
       });
 
+      videos.push(v);
       v.load();
     });
+
+    return () => {
+      videos.forEach((v) => {
+        v.pause();
+        v.removeAttribute('src');
+        v.load();
+      });
+    };
   }, []);
 
   useGSAP(() => {
@@ -42,9 +56,15 @@ const ModelScroll = () => {
       scrollTrigger: {
         trigger: '#f-canvas',
         start: 'top top',
-        end: 'bottom  top',
+        end: 'bottom top',
         scrub: 1,
         pin: true,
+        invalidateOnRefresh: true,
+        onRefresh: () => {
+          if (groupRef.current) {
+            groupRef.current.rotation.y = 0;
+          }
+        },
       },
     });
 
@@ -53,17 +73,26 @@ const ModelScroll = () => {
       scrollTrigger: {
         trigger: '#f-canvas',
         start: 'top center',
-        end: 'bottom  top',
+        end: 'bottom top',
         scrub: 1,
+        invalidateOnRefresh: true,
       },
     });
 
     // 3D SPIN
     if (groupRef.current) {
-      modelTimeline.to(groupRef.current.rotation, {
-        y: Math.PI * 2,
-        ease: 'power1.inOut',
-      });
+      modelTimeline.fromTo(
+        groupRef.current.rotation,
+        {
+          y: 0,
+          opacity: 0,
+        },
+        {
+          y: Math.PI * 2,
+          opacity: 1,
+          ease: 'power1.inOut',
+        },
+      );
     }
 
     // Content & Texture Sync
